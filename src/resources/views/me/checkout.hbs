@@ -1,0 +1,285 @@
+<div class="main-layout">
+    <div class="layout-center__horizontal">
+    <div class="form-checkout grid wide row">
+        <div class="col l-6 m-6 c-12">
+            <div class="title checkout">Địa chỉ nhận hàng</div>
+            <div class="table-addr">
+                <div class="loader">
+                    <img src="/img/Spinner.png"/>
+                </div>
+            </div>
+        </div>
+        <div class="col l-6 m-6 c-12">
+            <div class="title checkout">Ghi chú cho đơn hàng</div>
+            <form action="">
+                <div class="form-group">
+                    <label class="title" for="">Không bắt buộc</label>
+                    <div class="input-group">
+                        <textarea class="form-element" id="note-checkout" cols="30" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="checkout-btn">
+                    <a href="/me/cart" class="cancel text-light">
+                        Trở về
+                    </a>
+                    <div class="done">
+                        Xác nhận
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+<script>
+    (function(){
+        function getAddr(callback) {
+            fetch('/api/getAddr/me')
+                .then(res => res.json())
+                .then(callback)
+        }
+
+        function renderAddr(data) {
+            const htmls = data.map((value, index)=>{
+                return (`
+                    <div class="addr-item ${index==0&&'active'}" data-id="${value._id}">
+                        <div class="addr-item__nameUser">
+                            <i class="far fa-user"></i> ${value.nameOrder}
+                        </div>
+                        <div class="addr-item__addrName">
+                            <i class="fas fa-map-marker-alt"></i> ${value.addr}
+                        </div>
+                        <div class="addr-item__phoneUser">
+                            <i class="fas fa-phone-square"></i> ${value.phone}
+                        </div>
+                        <span class="btn-addr del-addr-order">Xóa địa chỉ</span>
+                        {{!-- <span class="btn-addr edit-addr-order">Thay đổi thông tin</span> --}}
+                    </div>
+                `)
+            });
+            
+            if (data.length < 3) {
+                htmls.push(`
+                    <div class="add-addr-order">
+                        <div>
+                        <i class="fas fa-plus-circle"></i> Thêm địa chỉ nhận hàng
+                        </div>
+                    </div>
+                `)
+            }
+
+            $('.table-addr').html(htmls.join(''));
+            event();
+        }
+        getAddr(renderAddr);
+
+        function event() {
+            $('.addr-item').click(function(e){
+                $('.addr-item.active').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            $('.btn-addr.del-addr-order').click(function(e){
+                dialog({
+                    title: 'Bạn có muốn xóa địa chỉ này?',
+                    type: 'danger',
+                    textBtn: 'Xóa ngay',
+                    cancelBtn: 'Hủy',
+                    action: function () {
+                        $.ajax({
+                            url: `/me/delAddr`,
+                            method: 'DELETE',
+                            data: {
+                                id: e.target.parentElement.dataset.id
+                            },
+                            success: (msg)=>{
+                                if (msg == 'success') {
+                                    Toast({
+                                        style: 1,
+                                        title: 'Xóa thành công!',
+                                        type: 'success',
+                                        duration: 1000,
+                                    });
+                                    getAddr(renderAddr);
+                                } else {
+                                    Toast({
+                                        style: 1,
+                                        title: 'Đã xảy ra lỗi',
+                                        type: 'error',
+                                        duration: 3000,
+                                    });
+                                }
+                            }, 
+                            error: ()=> {
+                                Toast({
+                                    style: 1,
+                                    title: 'Đã xảy ra lỗi',
+                                    type: 'error',
+                                    duration: 3000,
+                                });
+                            }
+                        });
+                    },
+                });
+            });
+
+            $('.add-addr-order').click(function(){
+                const main = document.querySelector('.main-layout');
+                const htmls = document.createElement('div');
+                const table = (`
+                    <div class="table">
+                        <div class="title">Thêm địa chỉ mới</div>
+                        <div class="form-group">
+                            <label class="title" for="">Tên người nhận</label>
+                            <div class="input-group">
+                                <input class="form-element" id="new-name-addr" placeholder="Nhập tên người nhận hàng"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="title" for="">Địa chỉ nhận hàng</label>
+                            <div class="input-group">
+                                <input class="form-element" id="new-addr-addr" placeholder="Số nhà-Xã/Phường-Huyện-Tỉnh/TP"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="title" for="">Số điện thoại</label>
+                            <div class="input-group">
+                                <input class="form-element" id="new-phone-addr" placeholder="+84"/>
+                            </div>
+                        </div>
+                        <span class="btn btn-secondary btn-close">
+                            Đóng
+                        </span>
+                        <span class="btn btn-primary btn-new-addr float-right">
+                            Lưu thông tin
+                        </span>
+                    </div>
+                `);
+                htmls.classList.add('table-add-addr');
+                htmls.innerHTML = table;
+                if (main) {
+                    main.appendChild(htmls);
+
+                    $('.table-add-addr .btn-close').click(()=>{
+                        main.removeChild(htmls);
+                    });
+
+                    $('.table-add-addr .btn-new-addr').click(()=>{
+                        const nameOrder = $('#new-name-addr').val();
+                        const addr = $('#new-addr-addr').val();
+                        const phone = $('#new-phone-addr').val();
+
+                        if (nameOrder !== '' && addr !== '' && phone !== '') {
+                             $.ajax({
+                                url: `/me/newAddr`,
+                                method: 'POST',
+                                data: {
+                                    nameOrder: nameOrder,
+                                    addr: addr,
+                                    phone: phone,
+                                },
+                                success: (msg)=>{
+                                    if (msg == 'success') {
+                                        main.removeChild(htmls);
+                                        getAddr(renderAddr);
+                                    } else if (msg == 'full') {
+                                        main.removeChild(htmls);
+                                        Toast({
+                                            style: 1,
+                                            title: 'Số lượng địa chỉ tối đa 3!',
+                                            type: 'warn',
+                                            duration: 3000,
+                                        });
+                                    } else {
+                                        Toast({
+                                            style: 1,
+                                            title: 'Đã xảy ra lỗi',
+                                            type: 'error',
+                                            duration: 3000,
+                                        });
+                                    }
+                                }, 
+                                error: ()=> {
+                                    Toast({
+                                        style: 1,
+                                        title: 'Đã xảy ra lỗi',
+                                        type: 'error',
+                                        duration: 3000,
+                                    });
+                                }
+                            });
+                        } else {
+                            Toast({
+                                style: 1,
+                                title: 'Vui lòng nhập đầy đủ',
+                                type: 'warn',
+                                duration: 1000,
+                            });
+                        }
+                    });
+                }
+            })
+        }
+
+        $('.checkout-btn .done').click((e)=> {
+                const note = $('#note-checkout').val();
+                let idAddr = document.querySelector('.addr-item.active') && document.querySelector('.addr-item.active').dataset.id;
+
+                if (idAddr) {
+                    $.ajax({
+                        url: `/buyer/checkout`,
+                        method: 'POST',
+                        data: {
+                            idAddr: idAddr,
+                            note: note,
+                        },
+                        success: (msg)=>{
+                            if (typeof msg == 'object') {
+                                Toast({
+                                    style: 1,
+                                    title: 'Tạo đơn hàng thành công',
+                                    type: 'success',
+                                    duration: 3000,
+                                });
+
+                                $('.num-dot.cart').html(msg[0]);
+                                $('.num-dot.order').html(msg[1]);
+                                window.location.href = '/me/order';
+                            }
+                            else if (msg == 'validator') {
+                                Toast({
+                                    style: 1,
+                                    title: 'Nhập đủ thông tin',
+                                    type: 'warn',
+                                    duration: 3000,
+                                });
+                            }
+                            else {
+                                Toast({
+                                    style: 1,
+                                    title: 'Có lỗi, thử lại sau',
+                                    type: 'error',
+                                    duration: 3000,
+                                });
+                            }
+                        }, 
+                        error: ()=> {
+                            Toast({
+                                style: 1,
+                                title: 'Đã xảy ra lỗi',
+                                type: 'error',
+                                duration: 3000,
+                            });
+                        }
+                    });
+                } else {
+                    Toast({
+                        style: 1,
+                        title: 'Vui lòng thêm địa chỉ nhận hàng',
+                        type: 'error',
+                        duration: 3000,
+                    });
+                }
+            });
+    })();
+</script>

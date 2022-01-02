@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/cart.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/panel.css">
+    <link rel="stylesheet" href="/css/seemore.css">
+    <link rel="stylesheet" href="/css/toast.css">
+    <link rel="stylesheet" href="/css/classify.css">
+    <link rel="stylesheet" href="/css/grid.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link href="/css/jquery.exzoom.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/882f0e5447.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/renderProduct.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>const socket = io(window.location.origin);</script>
+    <link rel="icon" href="/img/favicon-32x32.png" type="image/gif" sizes="32x32">
+    <title>{{title}}</title>
+</head>
+<body>
+<div id="main">
+    <div id="toast"></div>
+    <div id="dialog"></div>
+    {{#if pageadmin}}
+        {{> headeradmin}}
+    {{else}}
+        {{> header}}
+    {{/if}}
+    {{{body}}}
+    {{#if pageadmin}}
+    {{else}}
+        {{> footer}}
+    {{/if}}
+</div>
+<!-- Messenger Plugin chat Code -->
+    <div id="fb-root"></div>
+
+    <!-- Your Plugin chat code -->
+    <div id="fb-customer-chat" class="fb-customerchat">
+    </div>
+
+    {{!-- <script>
+      var chatbox = document.getElementById('fb-customer-chat');
+      chatbox.setAttribute("page_id", "100964945522571");
+      chatbox.setAttribute("attribution", "biz_inbox");
+      window.fbAsyncInit = function() {
+        FB.init({
+          xfbml            : true,
+          version          : 'v11.0'
+        });
+      };
+
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script> --}}
+
+    {{#if isAdmin}}
+    <script src="/js/main.js"></script>
+    {{/if}}
+    <script src="/js/lazysizes.min.js" async=""></script>
+    <script src="/js/getpathname.js"></script>
+    <script src="/js/toast.js"></script>
+    <script src="/js/callajax.js"></script>
+    <script src="/js/addcart.js"></script>
+    {{#if hide}}
+    {{else}}
+    <script src="/js/home.js"></script>
+    {{/if}}
+    <script src="/js/jquery.exzoom.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

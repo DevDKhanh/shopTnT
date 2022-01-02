@@ -1,0 +1,111 @@
+.main-classify {
+    width: 90vw;
+    padding: 1rem 0;
+}
+
+.title-classify {
+    font-size: 1.7rem;
+    font-weight: 600;
+    padding-top: 1rem;
+}
+
+.product-card {
+    border: 1px solid rgb(196, 196, 196);
+    border-radius: 1rem;
+    padding: .8rem;
+}
+
+.product-card__img {
+    position: relative;
+    overflow: hidden;
+    padding: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-card__img > img{
+    position: absolute;
+    width: 80%;
+    border-radius: 1rem;
+    box-shadow: 0 0 3px #ccc;
+    transition: .4s;
+    height: 65%;
+}
+
+.product-card:hover .product-card__img > img {
+    width: 90%;
+    height: 75%;
+}
+
+.product-card__img-background {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    background-color: rgb(177, 246, 255);
+    border-radius: 1rem;
+    transition: .2s;
+}
+
+.product-card:hover .product-card__img-background {
+    height: 100%;
+    background-color: rgb(47, 207, 255);
+}
+
+.product-card__seemore {
+    position: relative;
+    width: 100%;
+    height: 1.5rem;
+}
+
+.btn-see-more {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 600;
+    color: rgb(201, 201, 201);
+    font-size: 1.1rem;
+    transition: .4s;
+}
+
+.product-card:hover .btn-see-more {
+    color: rgb(0, 119, 255);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.btn-see-more:hover {
+    font-size: 1.2rem;
+}
+
+.product-card__name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card__description {
+    line-height: 1.5rem;
+    height: 3rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.product-card__footer {
+    display: flex;
+    align-items: center;
+}
+
+.product-card__footer > .price {
+    color: rgb(255, 161, 20);
+    font-size: 1.2rem;
+    font-weight: 700;
+    flex: 1;
+}

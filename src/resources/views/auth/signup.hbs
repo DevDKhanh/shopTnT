@@ -1,0 +1,92 @@
+<div class="main-layout"> 
+    <div class="layout-center__horizontal">
+        <div class="form-auth-option col-lg-5 col-md-8 col-sm-10">
+            <form class="form-submit-sign" method="POST">
+                <label class="title-table" for="">Đăng ký mua hàng</label>
+                <div class="form-group">
+                    <label class="title" for="">Tên tài khoản</label>
+                    <div class="input-group">
+                        <input autocomplete=off class="form-element" id="username" name="username" type="text" placeholder="VD: example">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="title" for="">Số điện thoại</label>
+                    <div class="input-group">
+                        <input autocomplete=off class="form-element" id="phone" name="phone" type="text" placeholder="(+84)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="title" for="">Mật khẩu</label>
+                    <div class="input-group">
+                        <input autocomplete=off class="form-element" id="password-pass1" name="password-pass1" type="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="title" for="">Nhập lại mật khẩu</label>
+                    <div class="input-group">
+                        <input autocomplete=off class="form-element" id="password-pass2" name="password-pass2" type="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group between">
+                        <a class="btn btn-color-pink box-shadow-none text-light" href="/account/login">Đã có tài khoản</a>
+                        <button class="btn btn-color-pink btn-sign box-shadow-none"><i class="fas fa-user-circle"></i> Đăng ký</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    (function submitSignUp() {
+        $('.btn-sign ').click((e)=>{
+            e.preventDefault();
+            const nameuser = $('#username').val();
+            const phone = $('#phone').val();
+            const password_1 = $('#password-pass1').val();
+            const password_2 = $('#password-pass2').val();
+            $.ajax({
+                url: '/account/signup',
+                method: 'POST',
+                data: {
+                    nameuser: nameuser,
+                    phone: phone, 
+                    password_1: password_1, 
+                    password_2: password_2
+                },
+                success: (msg)=>{
+                    if(msg == 'success') {
+                        $('#username').val('');
+                        $('#phone').val('');
+                        $('#password-pass1').val('');
+                        $('#password-pass2').val('');
+                        Toast({
+                            title: 'Thành công',
+                            message: 'Đăng ký thành công tài khoản',
+                            type: 'success',
+                            duration: 1600
+                        });
+                        setTimeout(()=>{
+                            window.location.href = '/account/login'
+                        }, 1000);
+                    }else {
+                        Toast({
+                            title: 'Cảnh báo',
+                            message: msg,
+                            type: 'warn',
+                            duration: 1600
+                        });
+                    }
+                },
+                error: (error)=> {
+                    Toast({
+                        title: 'Có lỗi',
+                        message: error,
+                        type: 'error',
+                        duration: 1600
+                    });
+                }
+            });
+        });
+    })()
+</script>

@@ -1,0 +1,85 @@
+<header>
+    <div class="header-admin">
+        <a class="back-shop" href="/">
+            <div class="back-shop__img">
+                <img src="/img/logo.png" alt="">
+            </div>
+        </a>
+        <div class="menu-admin">
+        </div>
+        <div class="header-admin__auth">
+            <a class="btn btn-logout text-light" href="/logout">
+                Đăng xuất
+            </a>
+        </div>
+    </div>
+    <div class="nav-menu-tablet header-admin-mobile">
+        <a href="/" class="nav-menu__logo admin">
+            <img src="/img/logo.png" alt="">
+        </a>
+        <div class="mobile-tab">
+            <label class="tab-menu" for="nav-menu-tablet">
+                <i class="fas fa-bars tab-icon"></i>
+            </label>  
+        </div>
+        <input type="checkbox" hidden name="" class="nav-menu-tablet" id="nav-menu-tablet">
+        <label for="nav-menu-tablet" class="over-lay"></label>
+        <div class="main-menu-tablet">
+            <div class="header-menu">
+                <label class="close" for="nav-menu-tablet">&times;</label>
+            </div>
+            <div class="items-menu">
+                <div class="item">
+                    <a class="item-link" href="/admin">Kho hàng <i class="fas fa-dolly-flatbed"></i></a>
+                </div>
+                <div class="item">
+                    <a class="item-link" href="/admin/khachhang">Khách hàng <i class="fas fa-users"></i></a>
+                </div>
+                <div class="item">
+                    <a class="item-link" href="/admin/donhang">Đơn hàng <i class="fab fa-product-hunt"></i></a>
+                </div>
+                <div class="item">
+                    <a class="item-link" href="/logout">Đăng xuất <i class="fas fa-sign-out-alt"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <audio hidden id="myAudio" controls>
+        <source id="source" src="/audio/chuong2.mp3" type="audio/mpeg">    
+    </audio>
+</header>
+<script>
+    (function(){
+        const title = document.title;
+
+        $('.menu-admin').html(`
+            <a class="item-link ${'{{title}}'=='Quản lí'?'active':''}" href="/admin">
+                Trang quản lí hàng
+            </a>
+            <a class="item-link ${'{{title}}'=='Đơn hàng'?'active':''}" href="/admin/donhang">
+                Quản lí đơn
+            </a>
+            <a class="item-link ${'{{title}}'=='Khách hàng'?'active':''}" href="/admin/khachhang">
+                Quản lí khách hàng
+            </a>
+        `);
+
+        const x = document.querySelector('#myAudio');
+        function ring() {
+            x.autoplay = true;
+            x.load();
+        }
+
+        socket.on('checkout-order', ()=> {
+            document.querySelector('#source').src = '/audio/chuong2.mp3';
+            ring();
+            document.title = `${ title } (có đơn hàng mới)`;
+        });
+
+        socket.on('cancel-order', ()=> {
+            document.querySelector('#source').src = '/audio/chuong.mp3';
+            ring();
+            document.title = `${ title } (có đơn hàng đã hủy)`;
+        });
+    })()
+</script>

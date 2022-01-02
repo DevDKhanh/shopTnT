@@ -1,0 +1,75 @@
+<div class="main-layout">
+    <div class="layout-center__horizontal">
+        <div class="main-seemore">
+            <div class="img-product">
+                <div class="img-product__screen" style="background-image: url('{{data.image}}');"></div>
+                <div class="exzoom" id="exzoom">
+                    <div class="exzoom_img_box">
+                        <ul class='exzoom_img_ul'>
+                            <li><img src="{{data.image}}"/></li>
+                        </ul>
+                    </div>
+                    <div class="exzoom_nav"></div>
+                </div>
+            </div>
+            <div class="info-product">
+                <div class="name-product">
+                    {{data.productname}}
+                </div>
+                <div class="card-product__star">
+                    <span>Đánh giá: </span>
+                    <span class="text-warning"><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <span class="text-warning"><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <span class="text-warning"><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <span class="text-warning"><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <span class="text-warning"><i class="fas fa-star" aria-hidden="true"></i></span>
+                </div>
+                <div class="price-product">
+                   {{{toLocaleString data.price}}} VNĐ
+                </div>
+                <div class="warranty-product">
+                    Bảo hành: {{data.productWarranty}}
+                </div>
+                <form hidden class="search" action="/search" method="GET">
+                    <input type="text" name="key" value="{{data.tradeMark}}">
+                    <input type="submit" id="btn-submit">
+                </form>
+                <div class="trade-product">
+                    Thương hiệu: <b class="text-info">{{data.tradeMark}}</b> || <label class="btn-more" for="btn-submit">Cùng thương hiệu</label>
+                </div>
+                <div class="des-product">
+                   <label for="">Thông tin:</label> 
+                   <div class="input-group">
+                        <textarea name="description" class="form-element" rows="7" readonly>{{data.description}}</textarea>
+                    </div>
+                </div>
+                <div class="info-product__control">
+                    <div class="btn btn-add" onclick="addCart('{{data.slug}}')">
+                        Thêm vào giỏ hàng
+                    </div>
+                    <a href="/buyer/{{data.slug}}/buy" class="btn btn-buy">
+                        Mua ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="info-product-mobile">
+    <div class="btn btn-add" onclick="addCart('{{data.slug}}')">
+        <div><i class="fas fa-cart-plus"></i></div>
+        Thêm vào giỏ hàng
+    </div>
+    <a href="/buyer/{{data.slug}}/buy" class="btn btn-buy">
+        Mua ngay
+    </a>
+</div>
+<script>
+    $(function(){
+
+        $("#exzoom").exzoom({
+            "autoPlay": false,
+        });
+
+    });
+</script>

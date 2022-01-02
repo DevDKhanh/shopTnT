@@ -1,0 +1,111 @@
+footer {
+    background-color: #2b3445;
+}
+
+.footer-contact {
+    padding: 4rem 3rem;
+    background-color: #373f50;
+    display: flex;
+    justify-content: space-between;
+}
+
+.web-access .number {
+    color: #fff;
+    padding-right: 1rem;
+    display: inline-block;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.info-web {
+    flex: .8;
+}
+
+.footer-contact .logo {
+    width: 240px;
+}
+
+.footer-contact img {
+    width: 100%;
+}
+
+.number + .number {
+    border-left: 1px solid #fff;
+    padding-left: 1rem;
+}
+
+.info-web .logo {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-shadow: 0 0 2px #fff;
+}
+
+.info-web .addr {
+    color: #dddddd;
+    text-shadow: 0 0 1px #bcbec4;
+    margin: 1rem 0;
+}
+
+.info-link {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     width: 40%;
+}
+
+.info-link-item {
+    width: 45%;
+}
+
+.info-link-item .title {
+    color: rgb(0, 255, 242);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+.info-link-item .title {
+    margin-top: 2rem;
+}
+
+.info-link .text {
+    padding: .3rem 0;
+    color: #ffffff;
+}
+
+.info-link .text a{
+    padding: .3rem 0;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.info-link .text a:hover{
+    opacity: .8;
+}
+
+.footer-end {
+     background-color: #2b3445;
+     padding: 0 3rem;
+}
+
+.footer-end .line{
+     background-color: #2b3445;
+     min-height: 130px;
+     border-bottom: .5px solid #4b5363;
+}
+
+.contact-design {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact-design {
+    padding: 1rem  0;
+}
+
+.contact-design .text {
+    font-size: .9rem;
+    color: #ccc;
+}

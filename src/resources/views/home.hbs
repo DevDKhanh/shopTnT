@@ -1,0 +1,53 @@
+<div class="main-layout">
+    <div class="banner">
+        <div class="banner__img"></div>
+        <div class="banner__text grid wide">
+            <div class="text-sz1">Mặt hàng phong phú, giá cả hợp lí</div>
+            <div class="text-sz2">Uy tín tạo thương hiệu</div>
+            <form class="search" action="/search" method="GET">
+                <input type="text" name="key" placeholder="Nhập tên sản phẩm muốn tìm kiếm">
+                <button><i class="fas fa-search"></i></button>
+            </form>  
+        </div>
+    </div>
+    <div id="render-product" class="grid wide"></div>
+</div>
+{{> refund}}
+<script>
+    const wait = new Promise((success, err)=>{
+        success()
+    });
+
+    wait
+    .then(()=>{
+        renderProduct({
+            filter: false,
+            new: true,
+            titleTable: 'Tất cả sản phẩm',
+            filterNumber: 'all',
+            sort: false,
+        });
+    })
+    .then(()=> {
+        renderProduct({
+            filter: true,
+            titleTable: 'Linh kiện/ Phụ kiện',
+            filterNumber: 'linh-kien-phu-kien',
+        }); 
+        renderProduct({
+            filter: true,
+            titleTable: 'Laptop',
+            filterNumber: 'laptop',
+        });
+        renderProduct({
+            filter: true,
+            titleTable: 'Máy tính để bàn',
+            filterNumber: 'may-tinh-de-ban',
+        });
+        renderProduct({
+            filter: true,
+            titleTable: 'Đồ cũ',
+            filterNumber: 'do-cu',
+        });
+    });
+</script>

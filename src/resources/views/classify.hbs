@@ -1,0 +1,39 @@
+<div class="main-layout">
+    <div class="layout-center__vertical">
+        <div class="title-classify">Sản phẩm hiện có</div>
+        <div class="row main-classify container">
+        {{#each product}}
+            <div class="col-sm-6 col-md-4 col-xl-3 p-1">
+                <div class="product-card">
+                    <div class="product-card__img">
+                        <div class="product-card__img-background"></div>
+                        <img src="{{this.image}}" alt="">
+                    </div>
+                    <div class="product-card__seemore">
+                        <a class="btn-see-more" href="/seemore/{{this.slug}}">Xem chi tiết</a>
+                    </div>
+                    <div class="product-card__name">
+                        {{this.productname}}
+                    </div>
+                    <div class="product-card__description">
+                        {{this.description}}
+                    </div>
+                    <div class="product-card__footer">
+                        <div class="price">{{{toLocaleString this.price}}}đ</div>
+                    </div>
+                    <div class="product-card__btn">
+                        <div class="btn btn-add-to-cart" onclick="addCart('{{this.slug}}')">
+                            Thêm vào giỏ
+                        </div>
+                        <a class="btn-mobile-see" href="/seemore/{{this.slug}}">Xem chi tiết</a>
+                        <a class="btn btn-buy-now mt-2" href="/buyer/{{this.slug}}/buy">
+                            Mua ngay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+        </div>
+    </div>
+</div>
+{{> refund}}

@@ -1,0 +1,51 @@
+<div class="main-layout container">
+    <div class="title-search">{{title}}</div>
+    <div class="main-search">
+    <div class="row">
+        {{#each data}}
+            <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3 mt-3">
+                <div class="card-product bg-dark-img">
+                    <div class="card-product__img" href="">
+                        <img class="img-inside" src="{{this.image}}" alt="">
+                        <div class="info-product">
+                            <a href="/seemore/{{this.slug}}"><i class="far fa-eye"></i></a>
+                            <div class="note-title">
+                                Xem chi tiết
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-product__star">
+                        <span class="text-warning"><i class="fas fa-star"></i></span>
+                        <span class="text-warning"><i class="fas fa-star"></i></span>
+                        <span class="text-warning"><i class="fas fa-star"></i></span>
+                        <span class="text-warning"><i class="fas fa-star"></i></span>
+                        <span class="text-warning"><i class="fas fa-star"></i></span>
+                    </div>
+                    <div class="card-product__name-product">
+                        {{this.productname}}
+                    </div>
+                    <div class="card-product__price-product">
+                        {{{toLocaleString this.price}}} VNĐ
+                    </div>
+                    <div class="card-product__footer">
+                        <div class="sold"></i> Đã bán {{this.bought}} <i class="fas fa-truck"></i></div>
+                    </div>
+                    <div class="card-product-action">
+                        <a class="btn-buy-now" href="/buyer/{{this.slug}}/buy">Mua ngay</a>
+                        <div class="btn-add-to-cart" onclick="addCart('{{this.slug}}')">
+                            Thêm vào giỏ hàng
+                        </div>
+                        <a class="btn-mobile-see" href="/seemore/{{this.slug}}">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            <div class="empty-search">
+                <img src="/img/icon/domain-seach-icon.png" alt="">
+                <div class="msg">Rất tiếc không thể tìm thấy sản phẩm này!</div>
+            </div>    
+        {{/each}}
+    </div>
+    </div>
+</div>
+{{> refund}}

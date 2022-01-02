@@ -1,0 +1,477 @@
+ <div class="main-layout">
+     <div class="main-order">
+        <div class="menu-order-admin">
+            <div class="item active index" data-menu="xet-don">
+                <span class="text">Xét duyệt đơn </span>
+                <span class="icon"><i class="fab fa-product-hunt"></i></span>
+            </div>
+            <div class="item" data-menu="dang-giao">
+                <span class="text">Đơn đang giao </span>
+                <span class="icon"><i class="fas fa-truck"></i></span>
+            </div>
+            <div class="item" data-menu="thanh-cong">
+                <span class="text">Bán thành công </span>
+                <span class="icon"><i class="fas fa-clipboard-check"></i></span>
+            </div>
+            <div class="item" data-menu="don-huy">
+                <span class="text">Đơn bị hủy </span>
+                <span class="icon"><i class="fas fa-window-close"></i></span>
+            </div>
+            <div class="line"></div>
+        </div>
+        <div class="table-check">
+            
+        </div>
+     </div>
+    <div id="show">
+    </div>
+ </div>
+<script>
+(function(){
+    const orderCheckApi = `/api/orderCheck/admin`;
+    const orderShippingApi = `/api/orderShip/admin`;
+    const orderDoneApi = `/api/orderDone/admin`;
+    const orderCancelApi = `/api/orderCancel/admin`;
+
+    const x = document.querySelector('#myAudio');
+    function ring() {
+        x.autoplay = true;
+        x.load();
+    }
+
+    socket.on('render-admin-order', ()=> {
+        $('.menu-order-admin .item.active').removeClass('active');
+        $('.menu-order-admin .item.index').addClass('active');
+        const line = document.querySelector('.menu-order-admin .line');
+        const active = document.querySelector('.item.active');
+        line.style.width = active.offsetWidth +'px';
+        line.style.left = active.offsetLeft +'px';
+        getCheckOrder(renderViewCheck, eventOrder);
+    });
+
+    socket.on('render-admin-order-shipping', ()=> {
+        getShippingOrder(orderShippingApi, renderShipping, eventOrder);
+    });
+
+    function start() {
+        getCheckOrder(renderViewCheck, eventOrder);
+        menuSelect();
+    }
+    start();
+
+    function eventOrder() {
+        $('.check-now').click((e)=> {
+            dialog({
+                title: 'Bạn muốn duyệt đơn này?',
+                type: 'success',
+                textBtn: 'Đồng ý',
+                action: function () {
+                    $.ajax({
+                        url: `/admin/isCheck`,
+                        method: 'PUT',
+                        data: {
+                            id: e.target.dataset.id
+                        },
+                        success: (msg)=>{
+                            if (msg == 'success') {
+                                Toast({ 
+                                    style: 1,
+                                    title: 'Đã phê duyệt',
+                                    type: 'success',
+                                    duration: 1200,
+                                });
+                            }else {
+                                Toast({
+                                    style: 1,
+                                    title: 'Có lỗi xảy ra',
+                                    type: 'error',
+                                    duration: 3000,
+                                });
+                            }
+                        },
+                        error: ()=> {
+                            Toast({
+                                style: 1,
+                                title: 'Có lỗi xảy ra',
+                                type: 'error',
+                                duration: 3000,
+                            });
+                        }
+                    })
+                }
+            });
+        });
+
+        $('.btn-order.shipping').click((e)=> {
+            dialog({
+                title: 'Đơn này đã sẵn sàng để vận chuyển?',
+                type: 'success',
+                textBtn: 'Đúng vậy',
+                action: function () {
+                    console.log(e.target.dataset.id)
+                    $.ajax({
+                        url: `/admin/isShipping`,
+                        method: 'PUT',
+                        data: {
+                            id: e.target.dataset.id
+                        },
+                        success: (msg)=>{
+                            if (msg == 'success') {
+                                Toast({ 
+                                    style: 1,
+                                    title: 'Đang vận chuyển',
+                                    type: 'success',
+                                    duration: 1200,
+                                });
+                            }else {
+                                Toast({
+                                    style: 1,
+                                    title: 'Có lỗi xảy ra',
+                                    type: 'error',
+                                    duration: 3000,
+                                });
+                            }
+                        },
+                        error: ()=> {
+                            Toast({
+                                style: 1,
+                                title: 'Có lỗi xảy ra',
+                                type: 'error',
+                                duration: 3000,
+                            });
+                        }
+                    })
+                }
+            });
+        });
+
+        $('.btn-order.done').click((e)=> {
+            dialog({
+                title: 'Xác nhận đơn hàng!',
+                type: 'info',
+                textBtn: 'Xác nhận',
+                action: function () {
+                    console.log(e.target.dataset.id)
+                    $.ajax({
+                        url: `/admin/isDone`,
+                        method: 'PUT',
+                        data: {
+                            id: e.target.dataset.id
+                        },
+                        success: (msg)=>{
+                            if (msg == 'success') {
+                                Toast({ 
+                                    style: 1,
+                                    title: 'Đã xác nhận',
+                                    type: 'success',
+                                    duration: 1200,
+                                });
+                            }else {
+                                Toast({
+                                    style: 1,
+                                    title: 'Có lỗi xảy ra',
+                                    type: 'error',
+                                    duration: 3000,
+                                });
+                            }
+                        },
+                        error: ()=> {
+                            Toast({
+                                style: 1,
+                                title: 'Có lỗi xảy ra',
+                                type: 'error',
+                                duration: 3000,
+                            });
+                        }
+                    })
+                }
+            });
+        });
+
+        $('.btn-order.note-order').click((e)=> {
+            $.ajax({
+                url: `/admin/seeNote/${e.currentTarget.dataset.id}`,
+                method: 'GET',
+                success: (msg)=>{
+                    if (msg == 'notfound') {
+                        Toast({
+                            style: 1,
+                            title: 'Đơn hàng này không có ghi chú',
+                            type: 'warn',
+                            duration: 3000,
+                        });
+                    } else if (msg == 'err') {
+                        Toast({
+                            style: 1,
+                            title: 'Có lỗi xảy ra',
+                            type: 'error',
+                            duration: 3000,
+                        });
+                    } else {
+                        const main = document.querySelector('#show');
+                        if(main) {
+                            const table = document.createElement('div');
+                            table.classList.add('showNote', 'bgr-fixed');
+                            table.innerHTML = `
+                                <div class="table-note">
+                                    <div class="title">
+                                        Ghi chú của đơn hàng
+                                    </div>
+                                    <div class="text">
+                                        ${msg}
+                                    </div>
+                                </div>
+                            `;
+                            main.appendChild(table);
+                            table.addEventListener('click', (e)=>{
+                                if (e.target.matches('.showNote')) {
+                                    main.removeChild(table);
+                                }
+                            });
+                        }
+                    }
+                },
+                error: ()=> {
+                    Toast({
+                        style: 1,
+                        title: 'Có lỗi xảy ra',
+                        type: 'error',
+                        duration: 3000,
+                    });
+                }
+            });
+        });
+
+        $('.btn-order.info-order').click((e)=> {
+            $.ajax({
+                url: `/admin/seeInfoOrder/${e.currentTarget.dataset.id}`,
+                method: 'GET',
+                success: (msg)=>{
+                    if (msg == 'notfound') {
+                        Toast({
+                            style: 1,
+                            title: 'Đơn hàng này không có ghi chú',
+                            type: 'warn',
+                            duration: 3000,
+                        });
+                    } else if (msg == 'err') {
+                        Toast({
+                            style: 1,
+                            title: 'Có lỗi xảy ra',
+                            type: 'error',
+                            duration: 3000,
+                        });
+                    } else {
+                        const main = document.querySelector('#show');
+                        if(main) {
+                            const table = document.createElement('div');
+                            table.classList.add('showNote', 'bgr-fixed');
+                            table.innerHTML = `
+                                <div class="table-note">
+                                    <div class="title">
+                                        Thông tin đơn hàng
+                                    </div>
+                                    <div class="text">
+                                        <div>
+                                            <b>Mã khách hàng: </b> 
+                                            <span id="id-user">${msg.idUser}</span>
+                                            <span class="btn-copy"><i data-id="id-user" class="far fa-copy"></i></span>
+                                        </div>
+                                        <div>
+                                            <b>Mã Đơn hàng: </b> 
+                                            <span id="id-order">${msg._id}</span>
+                                            <span class="btn-copy"><i data-id="id-order" class="far fa-copy"></i></span>
+                                        </div>
+                                        <div><b>Tên người nhận: </b> ${msg.addr.nameOrder}</div>
+                                        <div><b>Tên tài khoản đặt hàng: </b> ${msg.nameUser}</div>
+                                        <div><b>Địa chỉ nhận hàng: </b> ${msg.addr.addr}</div>
+                                        <div>
+                                            <b>Số điện thoại:</b>
+                                            <span id="phone-user">${msg.addr.phone}</span>
+                                            <span class="btn-copy"><i data-id="phone-user" class="far fa-copy"></i></span>
+                                        </div>
+                                        <div class="btn-show-list-info">DANH SÁCH SẢN PHẨM</div>
+                                    </div>
+                                </div>
+                            `;
+                            main.appendChild(table);
+                            table.addEventListener('click', (e)=>{
+                                if (e.target.matches('.showNote')) {
+                                    main.removeChild(table);
+                                } else if (e.target.matches('.fa-copy')) {
+                                    const text = document.querySelector(`#${e.target.dataset.id}`).innerHTML;
+                                    const input = document.createElement('input');
+                                    input.value = text;
+                                    table.appendChild(input);
+                                    input.focus();
+                                    input.select();
+                                    document.execCommand("copy");
+                                    table.removeChild(input);
+                                    Toast({
+                                        style: 1,
+                                        title: 'Đã copy',
+                                        type: 'success',
+                                        duration: 400,
+                                    });
+                                } else if (e.target.matches('.btn-show-list-info')) {
+                                    const tableProduct = document.createElement('div');
+                                    const listProduct = document.createElement('div');
+                                    tableProduct.classList.add('table-prdouct-user');
+                                    listProduct.classList.add('list-product-user')
+                                    const item = msg.listProduct.map(data=> {
+                                        return `
+                                            <div class="item-product">
+                                                <a href="/seemore/${data.slug}" target="_blank" class="card-product">
+                                                    <div class="img">
+                                                        <img src="${data.img}" alt="">
+                                                    </div>
+                                                    <div class="name">
+                                                        ${data.nameProduct}
+                                                    </div>
+                                                    <div class="quantity">
+                                                        Số lượng: ${data.quantity}
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        `;
+                                    });
+                                    listProduct.innerHTML=item.join('');
+                                    tableProduct.appendChild(listProduct)
+                                    table.appendChild(tableProduct);
+                                } else if (e.target.matches('.table-prdouct-user')) {
+                                    const tableProduct = document.querySelector('.table-prdouct-user');
+                                    if (tableProduct) table.removeChild(tableProduct);
+                                } else {
+                                    console.log(e)
+                                }
+                            });
+                        }
+                    }
+                },
+                error: ()=> {
+                    Toast({
+                        style: 1,
+                        title: 'Có lỗi xảy ra',
+                        type: 'error',
+                        duration: 3000,
+                    });
+                }
+            });
+        });
+    }
+
+    function getCheckOrder(callback, event) {
+        fetch(orderCheckApi)
+        .then(response => response.json())
+        .then(callback)
+        .then(event)
+    }
+
+    function renderViewCheck(data) {
+        const htmls = data.map(order=> {
+            return `
+                <div class="card-check">
+                    <div class="card-check__order ${order.isCheck?'checked-bg':'check-bg'}">
+                        <div class="card-check__info row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="name"><b>Tên khách hàng:</b> ${order.addr.nameOrder}</div>
+                                <div class="name"><b>Tài khoản đặt:</b> ${order.nameUser}</div>
+                                <div class="phone"><b>Số điện thoại:</b> ${order.addr.phone}</div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <div class="addr"><b>Địa chỉ:</b> ${order.addr.addr}</div>
+                                <div class="addr"><b>Tổng tiền:</b> ${order.total.toLocaleString('da-DK')} VNĐ</div>
+                                <div class="addr"><b>Ngày đặt hàng:</b> ${oldTime(order.updatedAt)}</div>
+                            </div>
+                        </div>
+                        <div class="card-check__control">
+                            <button class="btn-check ${order.isCheck?'checked un-check':'check-now'}" data-id="${order._id}">
+                                ${order.isCheck?`<i class="fas fa-check-double"></i>`
+                                :'Duyệt'}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-check__action">
+                        ${order.isCheck?`
+                        <div class="btn-order shipping bg-info" data-id="${order._id}">Vận chuyển</div>`:''}
+                        <div class="btn-order note-order" data-id="${order._id}">Xem ghi chú</div>
+                        <div class="btn-order info-order" data-id="${order._id}">Xem thông tin đơn</div>
+                        <div class="btn-order bg-danger" data-id="${order._id}">Hủy đơn</div>
+                    </div>
+                </div>`;  
+        })
+        $('.table-check').html(htmls);  
+    }
+
+    function getShippingOrder(api, callback, event) {
+        fetch(api)
+        .then(response => response.json())
+        .then(callback)
+        .then(event)
+    }
+
+    function renderShipping(data) {
+        const htmls = data.map(order=> {
+            return `
+                <div class="card-check">
+                    <div class="card-check__order ${order.isCancel?'bg-warning':'bg-skyblue'}">
+                        <div class="card-check__info row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="name"><b>Tên khách hàng:</b> ${order.addr.nameOrder}</div>
+                                <div class="name"><b>Tài khoản đặt:</b> ${order.nameUser}</div>
+                                <div class="phone"><b>Số điện thoại:</b> ${order.addr.phone}</div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <div class="addr"><b>Địa chỉ:</b> ${order.addr.addr}</div>
+                                <div class="addr"><b>Tổng tiền:</b> ${order.total.toLocaleString('da-DK')} VNĐ</div>
+                                <div class="addr"><b>${order.isCancel?'Hủy ngày: ':order.isDone?'Đã giao ngày: ':'Ngày giao hàng:'}</b> ${oldTime(order.updatedAt)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-check__action">
+                        <div class="btn-order info-order" data-id="${order._id}">Xem thông tin đơn</div>
+                        ${order.isCancel||order.isDone?'':`
+                            <div class="btn-order note-order" data-id="${order._id}">Xem ghi chú</div>
+                            <div class="btn-order bg-danger done" data-id="${order._id}">Đã giao hàng</div>
+                        `}
+                    </div>
+                </div>`;  
+        })
+        $('.table-check').html(htmls);  
+    }
+
+    function menuSelect() {
+        const line = document.querySelector('.menu-order-admin .line');
+        const active = document.querySelector('.item.active');
+        line.style.width = active.offsetWidth +'px';
+        line.style.left = active.offsetLeft +'px';
+        $('.menu-order-admin .item').click((e)=> {
+            $('.item.active').removeClass('active');
+            e.currentTarget.classList.add('active');
+            line.style.width = e.currentTarget.offsetWidth +'px';
+            line.style.left = e.currentTarget.offsetLeft +'px';
+            if (e.currentTarget.dataset.menu == 'dang-giao') {
+                getShippingOrder(orderShippingApi, renderShipping, eventOrder);
+            } else if (e.currentTarget.dataset.menu == 'thanh-cong') {
+                getShippingOrder(orderDoneApi, renderShipping, eventOrder);
+            } else if (e.currentTarget.dataset.menu == 'don-huy') {
+                getShippingOrder(orderCancelApi, renderShipping, eventOrder);
+            } else {
+                getCheckOrder(renderViewCheck, eventOrder);
+            }
+        })
+    }
+
+    function oldTime(time) {
+        let timeCmt = new Date(time);
+        let min = timeCmt.getMinutes();
+        let hours = timeCmt.getHours();
+        let today = timeCmt.getDay()+1;
+        let day = timeCmt.getDate();
+        let month = timeCmt.getMonth()+1;
+        let year = timeCmt.getFullYear();
+        if (today==1) today = 'CN';
+        return `${today=='CN'?'':'Thứ'} ${today}, ${day} tháng ${month} ${year} lúc ${hours}:${min}`;
+    }
+})()     
+</script>

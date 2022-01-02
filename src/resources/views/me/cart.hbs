@@ -1,0 +1,201 @@
+<div class="main-layout">
+    <div class="layout-center__horizontal">
+        <div class="main-cart">
+            <div class="list-product list-in-cart">
+            </div>
+            <div class="control-check-out">
+            </div>
+            <div id="render-product"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function(){
+        const renderCart = {
+            arrayList: [
+                {{#each order}}
+                {
+                    nameUser: `{{this.nameUser}}`,
+                    nameProduct: `{{this.nameProduct}}`,
+                    quantity: `{{this.quantity}}`,
+                    price: `{{this.price}}`,
+                    img: `{{this.img}}`,
+                    slug: `{{this.slug}}`,
+                    status: `{{this.status}}`,
+                },
+                {{/each}}
+            ],
+            calc:  {
+                totalPrice(array){
+                    return array.reduce((a, b)=>{
+                        return a + (Number(b.price)*Number(b.quantity));
+                    }, 0).toLocaleString('da-DK');
+                }
+            },
+            view: function() {
+                if (this.arrayList.length > 0) {
+                const htmls = this.arrayList.map((order, index) => {
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-zone-1">
+                                <div class="cart-item__img">
+                                    <img src="${order.img}" alt="">
+                                </div>
+                                <div class="cart-item_name">
+                                    ${order.nameProduct}
+                                </div>
+                            </div>
+                            <div class="cart-item-zone-2">
+                                <div class="cart-item__price">
+                                     ${Number(order.price).toLocaleString('da-DK')} VNĐ
+                                </div>
+                                <div class="cart-item__quantity">
+                                    <div class="btn btn-quantity btn-minus" data-slug="${order.slug}"><i class="fas fa-minus-circle"></i></div>
+                                    <div class="value-quantity" id="quantity-${order.slug}">${order.quantity}</div>
+                                    <div class="btn btn-quantity btn-plus" data-slug="${order.slug}"><i class="fas fa-plus-circle"></i></div>
+                                </div>
+                                <div class="cart-item__delete" data-slug="${order.slug}">
+                                    Xóa
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                $('.list-in-cart').html(htmls);
+
+                const htmlControl = `
+                    <div class="total-check-out">
+                        Tổng thanh toán ( ${this.arrayList.length} sản phẩm ): 
+                    </div>
+                    <div class="total-price">
+                        ${this.calc.totalPrice(this.arrayList)} VNĐ
+                    </div>
+                    <a href="/me/checkout" class="control-check-out__btn">
+                        Đặt hàng
+                    </a>`;
+                $('.control-check-out').html(htmlControl); 
+                }else {
+                    const htmls = `
+                        <div class="msg-cart">
+                            <img src="/img/cart.png"/>
+                            <div class="title">Giỏ hàng của bạn đang trống</div>
+                            <a href="/" class="btn btn-back">Mua hàng ngay</a>
+                        </div>
+                    `;
+                    $('.list-in-cart').html(htmls);
+                    $('.control-check-out').hide(); 
+                    renderProduct({
+                        titleTable: 'Có thể bạn thích',
+                        filter: false,
+                        new: true,
+                        filterNumber: '4',
+                        numberProduct: 4,
+                        sort: false
+                    });
+                }   
+            },
+            event: function() {
+                const _this = this;
+
+                $('.btn-minus').click((e)=> {
+                    $.ajax({
+                        url: `/buyer/minusCart`,
+                        method: 'PUT',
+                        data: {
+                            slug: e.currentTarget.dataset.slug,
+                        },
+                        success: (data) => {
+                            _this.arrayList = data;
+                            _this.view();
+                            _this.event();
+                        }
+                    });
+                });
+
+                $('.btn-plus').click((e)=> {
+                    $.ajax({
+                        url: `/buyer/plusCart`,
+                        method: 'PUT',
+                        data: {
+                            slug: e.currentTarget.dataset.slug,
+                        },
+                        success: (data) => {
+                            _this.arrayList = data;
+                            _this.view();
+                            _this.event();
+                        }
+                    });
+                });
+                
+                $('.cart-item__delete').click((e)=> {
+                    dialog({
+                        title: 'Bạn muốn xóa sản phẩm?',
+                        type: 'danger',
+                        textBtn: 'Xóa ngay',
+                        action: function () {
+                            $.ajax({
+                                url: `/buyer/delCart`,
+                                method: 'PUT',
+                                data: {
+                                    slug: e.currentTarget.dataset.slug,
+                                },
+                                success: (msg)=>{
+                                    if (typeof msg == 'object') {
+                                        Toast({
+                                            style: null,
+                                            title: 'Xóa thành công',
+                                            message: 'Đã xóa sản phẩm khỏi giỏ hàng',
+                                            type: 'info',
+                                            duration: 3000,
+                                        });
+
+                                        _this.arrayList = msg;
+                                        _this.view();
+                                        _this.event();
+                                        $('.num-dot.cart').html(msg[0].number)
+                                    } else if (typeof msg == 'number') {
+                                        _this.arrayList = [];
+                                        _this.view();
+                                        _this.event();
+                                        $('.num-dot.cart').html(msg)
+                                    } else {
+                                        Toast({
+                                            style: null,
+                                            title: 'Thất bại',
+                                            message: 'Đã xảy ra lỗi',
+                                            type: 'error',
+                                            duration: 3000,
+                                        });
+                                    }
+                                },
+                                error: ()=> {
+                                    Toast({
+                                        style: null,
+                                        title: 'Thất bại',
+                                        message: 'Đã xảy ra lỗi',
+                                        type: 'error',
+                                        duration: 3000,
+                                    });
+                                }
+                            });
+                        },
+                    })
+                })
+            },
+            handle: function() {
+                const _this = this;
+                socket.on('update-cart', (cart)=> {
+                    _this.arrayList = cart;
+                    _this.view();
+                    _this.event();
+                });
+            },
+            start: function() {
+                this.handle();
+                this.view();
+                this.event();
+            }
+        }
+        renderCart.start();
+    })()
+</script>
+
